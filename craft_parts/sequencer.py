@@ -19,9 +19,9 @@
 import logging
 from typing import Dict, List, Optional, Sequence
 
-from craft_parts import parts, steps
+from craft_parts import common, parts, plugins, steps
 from craft_parts.actions import Action, ActionType
-from craft_parts.infos import ProjectInfo
+from craft_parts.infos import PartInfo, ProjectInfo
 from craft_parts.parts import Part, part_list_by_name, sort_parts
 from craft_parts.state_manager import StateManager, states
 from craft_parts.steps import Step
@@ -170,17 +170,37 @@ class Sequencer:
         part_properties = part.spec.marshal()
 
         if step == Step.PULL:
+            assets = {
+                "stage-packages": set(part.spec.stage_packages),
+                "stage-snaps": set(part.spec.stage_snaps),
+            }
+
             state = states.PullState(
                 part_properties=part_properties,
                 project_options=self._project_info.project_options,
-                assets={},  # TODO: obtain pull assets
+                assets=assets,
             )
 
         elif step == Step.BUILD:
+            plugin = plugins.get_plugin(
+                part=part,
+                part_info=PartInfo(self._project_info, part),
+                properties=part.plugin_properties,
+            )
+
+            build_packages = common.get_build_packages(part=part, plugin=plugin)
+            build_snaps = common.get_build_snaps(part=part, plugin=plugin)
+
+            assets = {
+                "build-packages": build_packages,
+                "build-snaps": build_snaps,
+            }
+            assets.update(common.get_machine_manifest())
+
             state = states.BuildState(
                 part_properties=part_properties,
                 project_options=self._project_info.project_options,
-                assets={},  # TODO: obtain build assets
+                assets=assets,
             )
 
         elif step == Step.STAGE:

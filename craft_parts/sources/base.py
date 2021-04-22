@@ -20,7 +20,7 @@ import abc
 import os
 import shutil
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 import requests
 
@@ -70,7 +70,7 @@ class SourceHandler(abc.ABC):
         self.source_branch = source_branch
         self.source_depth = source_depth
         self.source_checksum = source_checksum
-        self.source_details = None
+        self.source_details: Dict[str, Any] = {}
 
         self.command = command
 

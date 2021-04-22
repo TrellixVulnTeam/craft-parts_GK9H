@@ -14,25 +14,24 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-"""Operations with platform-specific package repositories."""
+"""Helpers to determine the repository for the platform."""
 
-from . import errors  # noqa: F401
-from . import snaps  # noqa: F401
-from . import platform
-from .base import RepositoryType  # noqa: F401
+from craft_parts import errors
+from craft_parts.utils import os_utils
 
-# pylint: disable=import-outside-toplevel
+_DEB_BASED_PLATFORM = ["ubuntu", "debian", "elementary OS", "elementary", "neon"]
 
 
-def _get_repository_for_platform():
-    if platform.is_deb_based():
-        from .deb import Ubuntu
+def is_deb_based(distro=None) -> bool:
+    """Verify whether the distro uses .deb pacakages.
 
-        return Ubuntu
+    :param distro: The distribution ID as listed in ``/etc/os-release``.
 
-    from .base import DummyRepository
-
-    return DummyRepository
-
-
-Repository = _get_repository_for_platform()
+    :return: Whether the distro uses deb packages.
+    """
+    if not distro:
+        try:
+            distro = os_utils.OsRelease().id()
+        except errors.OsReleaseIdError:
+            distro = "unknown"
+    return distro in _DEB_BASED_PLATFORM

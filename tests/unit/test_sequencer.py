@@ -56,7 +56,7 @@ def test_sequencer_add_actions():
 )
 def test_sequencer_run_step(step, state_class):
     info = ProjectInfo(arch="aarch64", application_name="test")
-    p1 = Part("p1", {"stage": ["pkg"]})
+    p1 = Part("p1", {"plugin": "nil", "stage": ["pkg"]})
 
     seq = Sequencer(part_list=[p1], project_info=info)
     seq._run_step(p1, step)
@@ -71,7 +71,7 @@ def test_sequencer_run_step(step, state_class):
     ]
 
     # check if states were updated
-    props = PartSpec.unmarshal({"stage": ["pkg"]})
+    props = PartSpec.unmarshal({"plugin": "nil", "stage": ["pkg"]})
     assert state.part_properties == props.marshal()
     assert state.project_options == {
         "application_name": "test",
@@ -101,7 +101,7 @@ def test_sequencer_run_step_invalid():
 )
 def test_sequencer_rerun_step(mocker, step, state_class):
     info = ProjectInfo(arch="aarch64", application_name="test")
-    p1 = Part("p1", {"stage": ["pkg"]})
+    p1 = Part("p1", {"plugin": "nil", "stage": ["pkg"]})
 
     seq = Sequencer(part_list=[p1], project_info=info)
     mock_clean_part = mocker.spy(seq._sm, "clean_part")
@@ -121,7 +121,7 @@ def test_sequencer_rerun_step(mocker, step, state_class):
     ]
 
     # check if states were updated
-    props = PartSpec.unmarshal({"stage": ["pkg"]})
+    props = PartSpec.unmarshal({"plugin": "nil", "stage": ["pkg"]})
     assert state.part_properties == props.marshal()
     assert state.project_options == {
         "application_name": "test",
