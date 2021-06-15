@@ -24,7 +24,7 @@ from typing import Dict, List, Union
 from craft_parts import callbacks, packages, parts
 from craft_parts.actions import Action, ActionType
 from craft_parts.infos import PartInfo, ProjectInfo
-from craft_parts.parts import Part
+from craft_parts.parts import Part, sort_parts
 from craft_parts.steps import Step
 from craft_parts.utils import os_utils
 
@@ -45,7 +45,7 @@ class Executor:
         extra_build_packages: List[str] = None,
         extra_build_snaps: List[str] = None,
     ):
-        self._part_list = part_list
+        self._part_list = sort_parts(part_list)
         self._project_info = project_info
         self._extra_build_packages = extra_build_packages
         self._extra_build_snaps = extra_build_snaps
