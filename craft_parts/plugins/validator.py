@@ -101,6 +101,7 @@ class PluginEnvironmentValidator:
             logger.debug("executed %s with output %s", command, output)
             return output
         except subprocess.CalledProcessError as err:
+            logger.debug("command %s error code=%d", command, err.returncode)
             if err.returncode != COMMAND_NOT_FOUND:
                 raise errors.PluginEnvironmentValidationError(
                     part_name=self._part_name,

@@ -73,7 +73,9 @@ class SnapPackage:
 
     def __init__(self, snap: str):
         """Lifecycle handler for a snap of the format <snap-name>/<channel>."""
+        logger.debug("SnapPackage: snap=%s", snap)
         self.name, self.channel = _get_parsed_snap(snap)
+        logger.debug("SnapPackage: name=%s, channel=%s", self.name, self.channel)
         self._original_channel = self.channel
         if not self.channel or self.channel == "stable":
             self.channel = "latest/stable"
@@ -218,7 +220,12 @@ class SnapPackage:
 
     def install(self):
         """Installs the snap onto the system."""
-        logger.debug("Installing snap: %s", self.name)
+        logger.debug(
+            "Installing snap: %s (channel=%s, original_channel=%s)",
+            self.name,
+            self.channel,
+            self._original_channel,
+        )
         snap_install_cmd = ["snap", "install", self.name]
         if self._original_channel:
             snap_install_cmd.extend(["--channel", self._original_channel])
@@ -276,6 +283,7 @@ def download_snaps(*, snaps_list: Sequence[str], directory: str) -> None:
 
     The target directory is created if it does not exist.
     """
+    logger.debug("download_snaps=%s", snaps_list)
     # TODO manifest.yaml with snap revision from future machine output
     # for `snap download`.
     os.makedirs(directory, exist_ok=True)
@@ -292,6 +300,7 @@ def install_snaps(snaps_list: Union[Sequence[str], Set[str]]) -> List[str]:
 
     :return: a list of "name=revision" for the snaps installed.
     """
+    logger.debug("install_snaps=%s", snaps_list)
     snaps_installed = []
     for snap in snaps_list:
         snap_pkg = SnapPackage(snap)
